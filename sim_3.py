@@ -413,7 +413,7 @@ if CONFIG['mostrar_graficas']:
     
 
 
-    #%%
+#%%
     # Ver los datos del top N
     if CONFIG['mostrar_resultados']:
         print("\n" + "="*50)
@@ -426,11 +426,29 @@ if CONFIG['mostrar_graficas']:
             if 'Jameson 1' in col else col 
             for col in columnas
         ]
-        # Filtrar solo las columnas que existen
-        columnas_validas = [col for col in columnas_ajustadas if col in df_top10.columns]
-        print(df_top10[columnas_validas].to_string())
+        # Guardar dos tablas (top N para rango conocido y optimista) en un solo archivo Excel, en hojas separadas
 
-df_mc.to_excel('data/caso 3/simulacion_caso_3_mc.xlsx', index=False)
+        df_mc_optimista = df_mc[(df_mc[split_col] >= split_rango_optimista[0]) & (df_mc[split_col] <= split_rango_optimista[1])]
+        df_mc_conocido = df_mc[(df_mc[split_col] >= split_rango_conocido[0]) & (df_mc[split_col] <= split_rango_conocido[1])]
+
+
+#%%
+        # Ordena por 'ley_confinal' descendente para ambos top N
+        df_top10_optimista = df_mc_optimista.sort_values('ley_concentrado', ascending=False).head(CONFIG['graficas']['top_n']).copy()
+        df_top10_conocido = df_mc_conocido.sort_values('ley_concentrado', ascending=False).head(CONFIG['graficas']['top_n']).copy()
+
+        # Guardar ambas en un solo Excel por hojas separadas
+        excel_outfile = 'data/caso 3/topN_simulaciones_caso_3.xlsx'
+        with pd.ExcelWriter(excel_outfile) as writer:
+            df_top10_conocido.to_excel(writer, sheet_name='TopN_Conocido', index=False)
+            df_top10_optimista.to_excel(writer, sheet_name='TopN_Optimista', index=False)
+            df_mc_conocido.to_excel(writer, sheet_name='MC_Conocido', index=False)
+            df_mc_optimista.to_excel(writer, sheet_name='MC_Optimista', index=False)
+
+        print("\nTabla Top N (Split rango CONOCIDO):")
+        display(df_top10_conocido)
+        print("\nTabla Top N (Split rango OPTIMISTA):")
+        display(df_top10_optimista)
 
 
 # %%
