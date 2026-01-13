@@ -1,0 +1,16 @@
+# Archivos Excel - tratar como binarios
+*.xlsx binary
+*.xls binary
+
+# Archivos Python - normalizar line endings
+*.py text eol=lf
+
+# Archivos de texto
+*.md text
+*.txt text
+*.json text
+
+# Archivos de configuración
+.gitignore text
+.gitattributes text
+requirements.txt text
